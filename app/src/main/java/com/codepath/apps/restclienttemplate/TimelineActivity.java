@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -73,6 +76,30 @@ public class TimelineActivity extends AppCompatActivity {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // same as above
         startActivity(i);
     }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu: adds items to the action bar if it is present
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.miCompose:
+                writeTweet();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private boolean writeTweet() {
+        Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, ComposeActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
 
     private void populateHomeTimeline() {
         /**
