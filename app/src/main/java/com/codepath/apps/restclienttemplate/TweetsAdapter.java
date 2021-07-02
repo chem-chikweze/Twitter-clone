@@ -19,9 +19,10 @@ import java.util.List;
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
     Context context;
     List<Tweet> tweets;
+    Tweet tweet;
 
     // Pass in the context and list of tweets
-    public TweetsAdapter (Context context, List<Tweet> tweets) {
+    public TweetsAdapter(Context context, List<Tweet> tweets) {
         this.context = context;
         this.tweets = tweets;
     }
@@ -38,7 +39,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get the data at position
-        Tweet tweet = tweets.get(position);
+        tweet = tweets.get(position);
         // Bind the tweet with the view holder
         holder.bind(tweet);
     }
@@ -53,22 +54,34 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         ImageView ivProfileImage;
         TextView tvBody;
         TextView tvScreenName;
+        ImageView ivEmbedded;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
             tvBody = itemView.findViewById(R.id.tvBody);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
-
+            ivEmbedded = itemView.findViewById(R.id.ivEmbedded);
         }
 
         public void bind(Tweet tweet) {
             // Take out the different attributes of the tweet and use it to fill the screen
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.screenName);
-
             // use glide to enter image
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
+            Glide.with(context).load(tweet.firstEmbeddedImage).into(ivEmbedded);
+
         }
+    }
+
+    public void clear() {
+        tweets.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Tweet> list) {
+        tweets.addAll(list);
+        notifyDataSetChanged();
     }
 }

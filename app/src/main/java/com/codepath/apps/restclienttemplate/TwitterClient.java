@@ -17,9 +17,7 @@ import com.github.scribejava.core.builder.api.BaseApi;
  *   https://github.com/scribejava/scribejava/tree/master/scribejava-apis/src/main/java/com/github/scribejava/apis
  * Key and Secret are provided by the developer site for the given API i.e dev.twitter.com
  * Add methods for each relevant endpoint in the API.
- * 
- * NOTE: You may want to rename this object based on the service i.e TwitterClient or FlickrClient
- * 
+ *
  */
 public class TwitterClient extends OAuthBaseClient {
 	public static final BaseApi REST_API_INSTANCE = TwitterApi.instance(); // Change this
@@ -42,17 +40,26 @@ public class TwitterClient extends OAuthBaseClient {
 				String.format(REST_CALLBACK_URL_TEMPLATE, context.getString(R.string.intent_host),
 						context.getString(R.string.intent_scheme), context.getPackageName(), FALLBACK_URL));
 	}
-	// CHANGE THIS
-	// DEFINE METHODS for different API endpoints here
+
 	public void getHomeTimeline(JsonHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
+		params.put("tweet_mode", "extended");
 		params.put("count", 25);
 		params.put("since_id", 1);
 		client.get(apiUrl, params, handler);
 	}
 
+	public void getScrollHomeTimeline(JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
+		// Can specify query string params directly or through RequestParams.
+		RequestParams params = new RequestParams();
+		params.put("tweet_mode", "extended");
+		params.put("count", 25);
+		params.put("since_id", 1);
+		client.get(apiUrl, params, handler);
+	}
 	public void publishTweet(String message, JsonHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("statuses/update.json");
 		// Can specify query string params directly or through RequestParams.

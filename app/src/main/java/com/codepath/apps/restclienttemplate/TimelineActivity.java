@@ -2,12 +2,16 @@ package com.codepath.apps.restclienttemplate;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,10 +20,8 @@ import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import com.github.scribejava.apis.TwitterApi;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -33,16 +35,21 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
-    Button backbutton;
+    Button backButton;
     private int REQUEST_CODE = 20;
+    private SwipeRefreshLayout swipeContainer;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    private boolean liked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-        Log.i("Timeline: ", "we are in timeline baby");
-
         client = TwitterApplication.getRestClient(this);
+
+        // Find the toolbar view inside the activity layout
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         /**
          * Making the tweets time line
@@ -55,8 +62,8 @@ public class TimelineActivity extends AppCompatActivity {
         // Recycler view setup: layout manager and the adapter
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
 
-        backbutton = findViewById(R.id.button);
-        backbutton.setOnClickListener(new View.OnClickListener() {
+        backButton = findViewById(R.id.button);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "button clicked");
@@ -64,8 +71,62 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
         rvTweets.setAdapter(adapter);
-        populateHomeTimeline();
 
+        swipeContainer = findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchTimelineAsync(0);
+            }
+        });
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
+
+
+        populateHomeTimeline();
+    }
+
+    private void loadNextDataFromApi(int page) {
+        fetchTimelineAsync(page);
+        Log.i(TAG, "scroll new");
+    }
+
+    public void fetchTimelineAsync(int page) {
+        Log.i(TAG, "2 refreshhing");
+        // Send the network request to fetch the updated data
+        // `client` here is an instance of Android Async HTTP
+        // getHomeTimeline is an example endpoint.
+        client.getHomeTimeline(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(TAG, "66 onSuccess" + json.toString());
+                adapter.clear();
+                JSONArray jsonArray = json.jsonArray;
+                tweets.addAll(Tweet.fromJsonArray(jsonArray));
+                adapter.notifyDataSetChanged();
+                Log.i(TAG, "3 Refresh done timeline");
+                swipeContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.d("DEBUG", "4. Fetch timeline error: ");
+            }
+        });
     }
 
     private void logout() {
@@ -90,25 +151,25 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miCompose:
-                writeTweet();
+                showEditDialog();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private boolean writeTweet() {
-        Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, ComposeActivity.class);
-        startActivityForResult(intent, REQUEST_CODE);
-        return true;
+    private void showEditDialog() {
+        Log.i(TAG, "showEditDialog");
+        FragmentManager fm = getSupportFragmentManager();
+        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance("Some Title");
+        editNameDialogFragment.show(fm, "fragment_edit_name");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             // Get data from the intent (tweet)
             Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
-            tweets.add(0,tweet);
+            tweets.add(0, tweet);
             adapter.notifyItemChanged(0);
             rvTweets.smoothScrollToPosition(0);
         }
@@ -122,7 +183,7 @@ public class TimelineActivity extends AppCompatActivity {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.i(TAG, "onSuccess"+ json.toString());
+                Log.i(TAG, "onSuccess" + json.toString());
                 JSONArray jsonArray = json.jsonArray;
                 tweets.addAll(Tweet.fromJsonArray(jsonArray));
                 adapter.notifyDataSetChanged();
@@ -133,5 +194,17 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure", throwable);
             }
         });
+    }
+
+    public void likeTweet(View view) {
+        if (liked != true) {
+            view.clearAnimation();
+            view.setBackgroundResource(R.drawable.ic_twitter_liked);
+            liked = !liked;
+        } else {
+            view.clearAnimation();
+            view.setBackgroundResource(R.drawable.ic_twitter_like_outline);
+            liked = !liked;
+        }
     }
 }
