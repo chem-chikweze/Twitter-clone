@@ -55,6 +55,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvBody;
         TextView tvScreenName;
         ImageView ivEmbedded;
+        TextView tvRelativeDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,6 +63,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody = itemView.findViewById(R.id.tvBody);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             ivEmbedded = itemView.findViewById(R.id.ivEmbedded);
+            tvRelativeDate = itemView.findViewById(R.id.tvRelativeDate);
         }
 
         public void bind(Tweet tweet) {
@@ -71,6 +73,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             // use glide to enter image
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
             Glide.with(context).load(tweet.firstEmbeddedImage).into(ivEmbedded);
+            tvRelativeDate.setText(ParseRelativeDate.getRelativeTimeAgo(tweet.rawJsonDate));
 
         }
     }

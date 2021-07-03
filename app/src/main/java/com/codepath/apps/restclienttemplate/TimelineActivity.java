@@ -50,6 +50,9 @@ public class TimelineActivity extends AppCompatActivity {
         // Find the toolbar view inside the activity layout
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationIcon(R.drawable.ic_launcher_twitter);
 
         /**
          * Making the tweets time line
