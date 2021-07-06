@@ -12,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="14dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -21,8 +21,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginStart="9dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="14dp"
         android:layout_toEndOf="@+id/ivProfileImage"
+        android:text="chem21" />
+
+    <TextView
+        android:id="@+id/tvRelativeDate"
+        android:layout_width="143dp"
+        android:layout_height="19dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toEndOf="@+id/tvScreenName"
         android:text="chem21" />
 
     <TextView
@@ -56,8 +68,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="145dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="105dp">
+        android:layout_marginTop="05dp"
+        android:layout_marginEnd="105dp"
+        android:layout_marginBottom="5dp">
 
         <ImageView
             android:id="@+id/tweet_action_reply"
@@ -72,7 +85,7 @@
             android:layout_height="18dp"
             android:layout_marginStart="45dp"
             android:layout_toEndOf="@id/tweet_action_reply"
-            android:src="@drawable/ic_twitter_retweet"
+            android:src="@drawable/ic_vector_retweet"
             app:tint="#444" />
 
         <ImageView
@@ -81,9 +94,9 @@
             android:layout_height="18dp"
             android:layout_marginStart="45dp"
             android:layout_toEndOf="@id/tweet_action_retweet"
-            android:src="@drawable/ic_twitter_like_outline"
-            app:tint="#444"
-            android:onClick="likeTweet"/>
+            android:onClick="likeTweet"
+            android:src="@drawable/ic_vector_heart_stroke"
+            app:tint="#444" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"

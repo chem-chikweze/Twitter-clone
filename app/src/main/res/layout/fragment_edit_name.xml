@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rvLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:counterEnabled="true"
         app:counterMaxLength="240"
-        app:counterTextAppearance="@style/counterText"
-        app:counterOverflowTextAppearance="@style/counterOverride">
+        app:counterOverflowTextAppearance="@style/counterOverride"
+        app:counterTextAppearance="@style/counterText">
 
         <EditText
             android:id="@+id/etCompose"

@@ -17,6 +17,7 @@ public class Tweet {
     public boolean hasMedia;
     public ArrayList<String> embeddedImages;
     public String firstEmbeddedImage;
+    public String rawJsonDate;
 
     // empty constructor needed by the Parceler library
     public Tweet(){}
@@ -35,6 +36,12 @@ public class Tweet {
         }
         try {
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            tweet.rawJsonDate = jsonObject.getString("created_at");
         } catch (JSONException e) {
             e.printStackTrace();
         }
