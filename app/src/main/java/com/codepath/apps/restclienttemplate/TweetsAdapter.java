@@ -15,11 +15,12 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import java.util.List;
 
-
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
     Context context;
     List<Tweet> tweets;
     Tweet tweet;
+    int radius = 5;
+    int margin = 5;
 
     // Pass in the context and list of tweets
     public TweetsAdapter(Context context, List<Tweet> tweets) {
@@ -71,7 +72,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.screenName);
             // use glide to enter image
-            Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
+            Glide.with(context)
+                    .load(tweet.user.profileImageUrl)
+                    .circleCrop()
+                    .into(ivProfileImage);
             Glide.with(context).load(tweet.firstEmbeddedImage).into(ivEmbedded);
             tvRelativeDate.setText(ParseRelativeDate.getRelativeTimeAgo(tweet.rawJsonDate));
 
